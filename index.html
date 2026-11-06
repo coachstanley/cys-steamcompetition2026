@@ -28,20 +28,66 @@
     }
     header {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       padding-bottom: 15px;
       border-bottom: 2px solid var(--border);
     }
-    h1 { font-size: 2.4rem; color: var(--primary); margin-bottom: 8px; letter-spacing: 1px; }
+    h1 { font-size: 2.3rem; color: var(--primary); margin-bottom: 8px; letter-spacing: 1px; }
     .rules-badge {
       display: inline-block;
       background: #0284c7;
       color: #fff;
-      padding: 6px 16px;
+      padding: 5px 15px;
       border-radius: 20px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
     }
+    
+    /* 學校團體獎 儀表盤 */
+    .school-cup-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .school-card {
+      background: #182234;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    .school-card.leading {
+      border-color: var(--gold);
+      background: rgba(251, 191, 36, 0.08);
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+    }
+    .school-name {
+      font-size: 1.4rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .school-score {
+      text-align: right;
+    }
+    .school-score .pts {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .school-card.leading .school-score .pts {
+      color: var(--gold);
+    }
+    .school-score .sub-pts {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
     .grid-container {
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
@@ -49,6 +95,7 @@
     }
     @media (max-width: 1024px) {
       .grid-container { grid-template-columns: 1fr; }
+      .school-cup-container { grid-template-columns: 1fr; }
     }
     .card {
       background: var(--card-bg);
@@ -58,8 +105,8 @@
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
     }
     .card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 18px;
+      font-size: 1.35rem;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -67,7 +114,7 @@
     }
     /* 賽程列表 */
     .match-list {
-      max-height: 740px;
+      max-height: 680px;
       overflow-y: auto;
       padding-right: 8px;
     }
@@ -75,8 +122,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
-      margin-bottom: 10px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
       background: #24344d;
       border-radius: 8px;
       border-left: 5px solid var(--primary);
@@ -87,25 +134,25 @@
       justify-content: center;
       font-weight: bold;
       color: #fef08a;
-      padding: 16px;
-      font-size: 1.05rem;
+      padding: 14px;
+      font-size: 1rem;
     }
-    .match-info { font-size: 0.9rem; color: var(--text-muted); width: 95px; line-height: 1.4; }
+    .match-info { font-size: 0.85rem; color: var(--text-muted); width: 95px; line-height: 1.3; }
     .teams {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 1.15rem;
+      gap: 10px;
+      font-size: 1.1rem;
       font-weight: bold;
     }
     .team-btn {
       cursor: pointer;
-      padding: 8px 16px;
+      padding: 6px 14px;
       border-radius: 6px;
       border: 1px solid var(--border);
       background: #1e293b;
       color: var(--text);
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 600;
       transition: all 0.2s;
     }
@@ -118,9 +165,9 @@
       background: #334155;
       color: var(--text);
       border: none;
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-radius: 4px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       cursor: pointer;
     }
     .btn-action:hover { background: #475569; }
@@ -132,28 +179,28 @@
       text-align: left;
     }
     th, td {
-      padding: 14px 12px;
+      padding: 12px 10px;
       border-bottom: 1px solid var(--border);
     }
-    th { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
-    td { font-size: 1.1rem; }
+    th { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
+    td { font-size: 1.05rem; }
     .rank-row-1 { background: rgba(251, 191, 36, 0.1); }
     .rank-row-2 { background: rgba(226, 232, 240, 0.05); }
     .rank-row-3 { background: rgba(217, 119, 6, 0.05); }
-    .rank-1 { color: var(--gold); font-weight: bold; font-size: 1.25rem; }
-    .rank-2 { color: var(--silver); font-weight: bold; font-size: 1.15rem; }
-    .rank-3 { color: var(--bronze); font-weight: bold; font-size: 1.15rem; }
+    .rank-1 { color: var(--gold); font-weight: bold; font-size: 1.2rem; }
+    .rank-2 { color: var(--silver); font-weight: bold; font-size: 1.1rem; }
+    .rank-3 { color: var(--bronze); font-weight: bold; font-size: 1.1rem; }
     .score-badge {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 14px;
+      padding: 3px 10px;
+      border-radius: 12px;
       background: #0284c7;
       color: white;
       font-weight: bold;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
     }
     .win-loss-tag {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
     }
   </style>
@@ -161,10 +208,40 @@
 <body>
 
   <header>
-    <h1>明愛元朗陳震夏中學</h1>
-    <h1>元朗震夏盃 人工智慧機械車挑戰賽2026</h1>
-    <div class="rules-badge">單循環 21 場 ｜ 勝方 3 分 ｜ 負方 1 分 ｜ 不設和局 (黃金加時 / 碰燈即時死亡)</div>
+    <h1>🤖 元朗震夏盃 人工智慧機械車挑戰賽2026</h1>
+    <div class="rules-badge">單循環 21 場 ｜ 勝方 3 分 ｜ 負方 1 分 ｜ 團體總錦標賽事</div>
   </header>
+
+  <!-- 學校團體總錦標 實時儀表盤 -->
+  <div class="school-cup-container">
+    <div class="school-card" id="cardTrueLight">
+      <div class="school-name">
+        <span style="font-size: 1.6rem;">🏫</span>
+        <div>
+          <div>真光學校</div>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">(共 4 隊出賽)</span>
+        </div>
+      </div>
+      <div class="school-score">
+        <div class="pts" id="scoreTrueLight">0.0 <span style="font-size: 1rem; font-weight: normal;">分</span></div>
+        <div class="sub-pts" id="subTrueLight">累積總分: 0 分</div>
+      </div>
+    </div>
+
+    <div class="school-card" id="cardYingLoi">
+      <div class="school-name">
+        <span style="font-size: 1.6rem;">🏫</span>
+        <div>
+          <div>光明英來學校</div>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">(共 3 隊出賽)</span>
+        </div>
+      </div>
+      <div class="school-score">
+        <div class="pts" id="scoreYingLoi">0.0 <span style="font-size: 1rem; font-weight: normal;">分</span></div>
+        <div class="sub-pts" id="subYingLoi">累積總分: 0 分</div>
+      </div>
+    </div>
+  </div>
 
   <div class="grid-container">
     <!-- 左側：21 場賽程操作列表 -->
@@ -176,16 +253,16 @@
       <div class="match-list" id="matchContainer"></div>
     </div>
 
-    <!-- 右側：獨立大尺寸積分排行榜 -->
+    <!-- 右側：獨立個人隊伍排行榜 -->
     <div class="card">
-      <h2>🏆 挑戰賽即時積分排行榜</h2>
+      <h2>🏆 隊伍實時積分排行榜</h2>
       <table>
         <thead>
           <tr>
             <th style="width: 22%;">名次</th>
-            <th style="width: 30%;">隊伍名稱</th>
-            <th style="width: 20%;">已賽進度</th>
-            <th style="width: 28%;">總積分</th>
+            <th style="width: 32%;">隊伍名稱</th>
+            <th style="width: 26%;">已賽進度</th>
+            <th style="width: 20%;">總積分</th>
           </tr>
         </thead>
         <tbody id="leagueTableBody"></tbody>
@@ -199,7 +276,7 @@
       '光明英來A', '光明英來B', '光明英來C'
     ];
 
-    // 21 場標準賽程設定
+    // 21 場標準賽程設定 (場 19 與場 20 已對調)
     const MATCHES = [
       { id: 1, time: '09:45-09:51', round: 1, t1: '真光A', t2: '光明英來B' },
       { id: 2, time: '09:51-09:57', round: 1, t1: '真光B', t2: '光明英來A' },
@@ -225,11 +302,12 @@
       { id: 21, time: '12:30-12:36', round: 7, t1: '真光B', t2: '真光C' }
     ];
 
-    let matchResults = JSON.parse(localStorage.getItem('matchResults_v2') || '{}');
+    let matchResults = JSON.parse(localStorage.getItem('matchResults_v3') || '{}');
 
     function saveState() {
-      localStorage.setItem('matchResults_v2', JSON.stringify(matchResults));
+      localStorage.setItem('matchResults_v3', JSON.stringify(matchResults));
       renderTable();
+      renderSchoolCup();
     }
 
     function recordWinner(matchId, winnerTeam) {
@@ -310,16 +388,17 @@
         stats[loser].points += 1; // 負方 1 分
       });
 
-      // 排序：積分多優先，若同分勝場多優先
-      return Object.values(stats).sort((a, b) => b.points - a.points || b.won - a.won);
+      return stats;
     }
 
     function renderTable() {
-      const stats = calculateStats();
+      const statsObj = calculateStats();
+      const statsList = Object.values(statsObj).sort((a, b) => b.points - a.points || b.won - a.won);
+
       const leagueBody = document.getElementById('leagueTableBody');
       leagueBody.innerHTML = '';
 
-      stats.forEach((s, idx) => {
+      statsList.forEach((s, idx) => {
         const tr = document.createElement('tr');
         if (idx === 0) tr.className = 'rank-row-1';
         else if (idx === 1) tr.className = 'rank-row-2';
@@ -341,9 +420,45 @@
       });
     }
 
+    // 學校團體獎計算
+    function renderSchoolCup() {
+      const stats = calculateStats();
+
+      // 真光 (A, B, C, D 共 4 隊)
+      let trueLightTotal = 0;
+      ['真光A', '真光B', '真光C', '真光D'].forEach(t => { trueLightTotal += stats[t].points; });
+      let trueLightAvg = (trueLightTotal / 4).toFixed(1);
+
+      // 光明英來 (A, B, C 共 3 隊)
+      let yingLoiTotal = 0;
+      ['光明英來A', '光明英來B', '光明英來C'].forEach(t => { yingLoiTotal += stats[t].points; });
+      let yingLoiAvg = (yingLoiTotal / 3).toFixed(1);
+
+      // 渲染文字
+      document.getElementById('scoreTrueLight').innerHTML = `${trueLightAvg} <span style="font-size: 1rem; font-weight: normal;">平均分</span>`;
+      document.getElementById('subTrueLight').innerText = `累積總分: ${trueLightTotal} 分 (4隊)`;
+
+      document.getElementById('scoreYingLoi').innerHTML = `${yingLoiAvg} <span style="font-size: 1rem; font-weight: normal;">平均分</span>`;
+      document.getElementById('subYingLoi').innerText = `累積總分: ${yingLoiTotal} 分 (3隊)`;
+
+      // 領先光暈效果
+      const cardTL = document.getElementById('cardTrueLight');
+      const cardYL = document.getElementById('cardYingLoi');
+
+      cardTL.classList.remove('leading');
+      cardYL.classList.remove('leading');
+
+      if (parseFloat(trueLightAvg) > parseFloat(yingLoiAvg)) {
+        cardTL.classList.add('leading');
+      } else if (parseFloat(yingLoiAvg) > parseFloat(trueLightAvg)) {
+        cardYL.classList.add('leading');
+      }
+    }
+
     // 初始化渲染
     renderMatches();
     renderTable();
+    renderSchoolCup();
   </script>
 </body>
 </html>
