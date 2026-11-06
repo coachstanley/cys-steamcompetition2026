@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聯校機器人暨 AI 雙贏挑戰賽 - 實時計分大螢幕</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --gold: #fbbf24;
+      --red: #f43f5e;
+      --blue: #3b82f6;
+      --border: #334155;
+      --green: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+    h1 { font-size: 2.2rem; color: var(--primary); margin-bottom: 8px; }
+    .rules-badge {
+      display: inline-block;
+      background: #0284c7;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+    }
+    @media (max-width: 1024px) {
+      .grid-container { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    }
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--gold);
+    }
+    /* 賽程列表 */
+    .match-list {
+      max-height: 700px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .match-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: #24344d;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+    .match-item.paused {
+      background: #451a03;
+      border-left-color: var(--gold);
+      justify-content: center;
+      font-weight: bold;
+      color: #fef08a;
+      padding: 14px;
+    }
+    .match-info { font-size: 0.85rem; color: var(--text-muted); width: 85px; }
+    .teams {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: bold;
+    }
+    .team-btn {
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #1e293b;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .team-btn.red { border-left: 4px solid var(--red); }
+    .team-btn.blue { border-left: 4px solid var(--blue); }
+    .team-btn.won { background: #15803d; color: #fff; border-color: #22c55e; }
+    .team-btn.lost { background: #334155; color: #64748b; opacity: 0.7; }
+    .match-actions { display: flex; gap: 6px; }
+    .btn-action {
+      background: #334155;
+      color: var(--text);
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .btn-action:hover { background: #475569; }
+    .btn-reset { color: #f87171; }
+    /* 排行榜表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
+    td { font-size: 0.95rem; }
+    tr:first-child td { font-weight: bold; color: var(--gold); font-size: 1.05rem; }
+    .rank-1 { color: #fbbf24; font-weight: bold; }
+    .rank-2 { color: #e2e8f0; font-weight: bold; }
+    .rank-3 { color: #b45309; font-weight: bold; }
+    .score-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: #0284c7;
+      color: white;
+      font-weight: bold;
+    }
+    /* AI 工作坊輸入 */
+    .ai-input {
+      width: 60px;
+      padding: 4px 6px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🤖 聯校機器人暨 AI 雙贏挑戰賽</h1>
+    <div class="rules-badge">單循環 21 場 ｜ 勝方 3 分 ｜ 負方 1 分 ｜ 不設和局 (加時/碰燈即時死亡)</div>
+  </header>
+
+  <div class="grid-container">
+    <!-- 左側：21 場賽程操作列表 -->
+    <div class="card">
+      <h2>
+        <span>⏱️ 即時賽程記錄 (每場 6 分鐘)</span>
+        <button class="btn-action btn-reset" onclick="resetAllData()">重置所有數據</button>
+      </h2>
+      <div class="match-list" id="matchContainer"></div>
+    </div>
+
+    <!-- 右側：排行榜與 AI 評分區 -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <!-- 機器人聯賽積分榜 -->
+      <div class="card">
+        <h2>🏆 機器人聯賽實時積分榜</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>名次</th>
+              <th>隊伍</th>
+              <th>已賽</th>
+              <th>勝 / 負</th>
+              <th>賽事積分</th>
+            </tr>
+          </thead>
+          <tbody id="leagueTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- AI 工作坊與全能總錦標 -->
+      <div class="card">
+        <h2>🌟 STEM 雙贏全能總錦標 (賽事50% + AI 50%)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>隊伍</th>
+              <th>賽事得分(50)</th>
+              <th>AI評分(100)</th>
+              <th>總得分(100)</th>
+              <th>排名</th>
+            </tr>
+          </thead>
+          <tbody id="overallTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TEAMS = [
+      '真光A', '真光B', '真光C', '真光D',
+      '光明英來A', '光明英來B', '光明英來C'
+    ];
+
+    // 21場標準賽程定義
+    const MATCHES = [
+      { id: 1, time: '09:45-09:51', round: 1, t1: '真光A', t2: '光明英來B' },
+      { id: 2, time: '09:51-09:57', round: 1, t1: '真光B', t2: '光明英來A' },
+      { id: 3, time: '09:57-10:03', round: 1, t1: '真光C', t2: '真光D' },
+      { id: 4, time: '10:03-10:09', round: 2, t1: '真光B', t2: '光明英來C' },
+      { id: 5, time: '10:09-10:15', round: 2, t1: '真光C', t2: '光明英來B' },
+      { id: 6, time: '10:15-10:21', round: 2, t1: '真光D', t2: '光明英來A' },
+      { id: 7, time: '10:21-10:27', round: 3, t1: '真光C', t2: '真光A' },
+      { id: 8, time: '10:27-10:33', round: 3, t1: '真光D', t2: '光明英來C' },
+      { id: 9, time: '10:33-10:39', round: 3, t1: '光明英來A', t2: '光明英來B' },
+      { id: 10, time: '10:39-10:45', round: 4, t1: '真光D', t2: '真光B' },
+      { id: 11, time: '10:45-10:51', round: 4, t1: '光明英來A', t2: '真光A' },
+      { id: 12, time: '10:51-10:57', round: 4, t1: '光明英來B', t2: '光明英來C' },
+      { id: 13, time: '10:57-11:03', round: 5, t1: '光明英來A', t2: '真光C' },
+      { id: 14, time: '11:03-11:09', round: 5, t1: '光明英來B', t2: '真光B' },
+      { id: 15, time: '11:09-11:15', round: 5, t1: '光明英來C', t2: '真光A' },
+      { id: 16, time: '11:15-11:21', round: 6, t1: '光明英來B', t2: '真光D' },
+      { id: 17, time: '11:21-11:27', round: 6, t1: '光明英來C', t2: '真光C' },
+      { id: 18, time: '11:27-11:33', round: 6, t1: '真光A', t2: '真光B' },
+      { id: 'pause', isPause: true, time: '11:33-12:18', text: '🔥 第 6 輪賽後：全體 45 分鐘深度 AI 評分工作坊 (比賽暫停)' },
+      { id: 19, time: '12:18-12:24', round: 7, t1: '光明英來C', t2: '光明英來A' },
+      { id: 20, time: '12:24-12:30', round: 7, t1: '真光A', t2: '真光D' },
+      { id: 21, time: '12:30-12:36', round: 7, t1: '真光B', t2: '真光C' }
+    ];
+
+    let matchResults = JSON.parse(localStorage.getItem('matchResults') || '{}');
+    let aiScores = JSON.parse(localStorage.getItem('aiScores') || '{}');
+
+    function saveState() {
+      localStorage.setItem('matchResults', JSON.stringify(matchResults));
+      localStorage.setItem('aiScores', JSON.stringify(aiScores));
+      renderTables();
+    }
+
+    function recordWinner(matchId, winnerTeam) {
+      matchResults[matchId] = winnerTeam;
+      saveState();
+      renderMatches();
+    }
+
+    function clearMatch(matchId) {
+      delete matchResults[matchId];
+      saveState();
+      renderMatches();
+    }
+
+    function updateAiScore(team, val) {
+      aiScores[team] = parseFloat(val) || 0;
+      saveState();
+    }
+
+    function resetAllData() {
+      if (confirm('確定要清空所有比分與 AI 成績嗎？此操作不可逆！')) {
+        matchResults = {};
+        aiScores = {};
+        saveState();
+        renderMatches();
+      }
+    }
+
+    function renderMatches() {
+      const container = document.getElementById('matchContainer');
+      container.innerHTML = '';
+
+      MATCHES.forEach(m => {
+        if (m.isPause) {
+          const pauseDiv = document.createElement('div');
+          pauseDiv.className = 'match-item paused';
+          pauseDiv.innerText = m.text;
+          container.appendChild(pauseDiv);
+          return;
+        }
+
+        const div = document.createElement('div');
+        div.className = 'match-item';
+
+        const winner = matchResults[m.id];
+        const t1Class = winner === m.t1 ? 'won' : (winner ? 'lost' : '');
+        const t2Class = winner === m.t2 ? 'won' : (winner ? 'lost' : '');
+
+        div.innerHTML = `
+          <div class="match-info">
+            <div><strong>場 ${m.id}</strong> (${m.round}輪)</div>
+            <div>${m.time}</div>
+          </div>
+          <div class="teams">
+            <button class="team-btn red ${t1Class}" onclick="recordWinner(${m.id}, '${m.t1}')">${m.t1}</button>
+            <span style="font-size: 0.8rem; color: #64748b;">VS</span>
+            <button class="team-btn blue ${t2Class}" onclick="recordWinner(${m.id}, '${m.t2}')">${m.t2}</button>
+          </div>
+          <div class="match-actions">
+            ${winner ? `<button class="btn-action btn-reset" onclick="clearMatch(${m.id})">重設</button>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function calculateStats() {
+      const stats = {};
+      TEAMS.forEach(t => {
+        stats[t] = { team: t, played: 0, won: 0, lost: 0, points: 0 };
+      });
+
+      Object.entries(matchResults).forEach(([mId, winner]) => {
+        const m = MATCHES.find(x => x.id == mId);
+        if (!m || !winner) return;
+
+        const loser = winner === m.t1 ? m.t2 : m.t1;
+        stats[winner].played += 1;
+        stats[winner].won += 1;
+        stats[winner].points += 3; // 勝方 3 分
+
+        stats[loser].played += 1;
+        stats[loser].lost += 1;
+        stats[loser].points += 1; // 負方 1 分
+      });
+
+      return Object.values(stats).sort((a, b) => b.points - a.points || b.won - a.won);
+    }
+
+    function renderTables() {
+      const stats = calculateStats();
+      const leagueBody = document.getElementById('leagueTableBody');
+      leagueBody.innerHTML = '';
+
+      stats.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        const rankClass = idx === 0 ? 'rank-1' : (idx === 1 ? 'rank-2' : (idx === 2 ? 'rank-3' : ''));
+        tr.innerHTML = `
+          <td class="${rankClass}">第 ${idx + 1} 名</td>
+          <td><strong>${s.team}</strong></td>
+          <td>${s.played} / 6</td>
+          <td>${s.won} 勝 ${s.lost} 負</td>
+          <td><span class="score-badge">${s.points} 分</span></td>
+        `;
+        leagueBody.appendChild(tr);
+      });
+
+      // 總錦標計算
+      const overallBody = document.getElementById('overallTableBody');
+      overallBody.innerHTML = '';
+
+      const overallList = stats.map(s => {
+        const matchPart = (s.points / 18) * 50; // 最高18分換算為50分滿分
+        const aiScore = aiScores[s.team] || 0;
+        const aiPart = (aiScore / 100) * 50;
+        const total = (matchPart + aiPart).toFixed(1);
+        return { team: s.team, matchPart: matchPart.toFixed(1), aiScore, total: parseFloat(total) };
+      }).sort((a, b) => b.total - a.total);
+
+      overallList.forEach((o, idx) => {
+        const tr = document.createElement('tr');
+        const rankBadge = idx === 0 ? '👑 總冠軍' : `第 ${idx + 1}`;
+        tr.innerHTML = `
+          <td><strong>${o.team}</strong></td>
+          <td>${o.matchPart}</td>
+          <td>
+            <input type="number" class="ai-input" min="0" max="100" value="${o.aiScore || ''}" 
+                   onchange="updateAiScore('${o.team}', this.value)" placeholder="0-100">
+          </td>
+          <td><strong style="color: var(--primary); font-size: 1.1rem;">${o.total}</strong></td>
+          <td style="${idx === 0 ? 'color: var(--gold); font-weight: bold;' : ''}">${rankBadge}</td>
+        `;
+        overallBody.appendChild(tr);
+      });
+    }
+
+    // 初始化執行
+    renderMatches();
+    renderTables();
+  </script>
+</body>
+</html>
